@@ -16,6 +16,8 @@ on:
 jobs:
   deploy-test-environment:
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
     env:
       GH_TOKEN: ${{ github.token }}
       REPOSITORY: 'FineArchs/misskey'
