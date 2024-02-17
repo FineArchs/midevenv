@@ -1,0 +1,49 @@
+name: Update autogen files
+on:
+  workflow_call:
+    inputs:
+      branch_or_hash:
+        type: string
+        required: true
+  workflow_dispatch:
+    inputs:
+      branch_or_hash:
+        type: string
+        required: true
+
+jobs:
+  deploy-test-environment:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPOSITORY: 'FineArchs/misskey'
+      BRANCH_OR_HASH: ${{ inputs.branch_or_hash }}
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        repository: ${{ env.REPOSITORY }}
+        ref: ${{ env.BRANCH_OR_HASH }}
+
+    - name: Regen misskey-js type defs
+      run: |
+        pnpm run build-misskey-js-with-types
+
+    - name: Create PR
+      run: |
+        BASE_BRANCH=$( git rev-parse --abbrev-ref HEAD )
+        HEAD_BRANCH="autogen/$BASE_BRANCH"
+        git config --global user.email "cicada1003@gmail.com"
+        git config --global user.name "FineArchs"
+        git add .
+        git commit -m"Update autogen files"
+        git branch -m $HEAD_BRANCH
+        git push -f -u origin $HEAD_BRANCH
+        PRS=$(gh pr list --json id -H $HEAD_BRANCH -s open)
+        if [ "$PRS" == '[]' ]
+        then
+          gh pr create --base $BASE_BRANCH --fill --label bot
+        else
+          echo "$PRS"
+        fi
