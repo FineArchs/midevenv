@@ -12,7 +12,7 @@ on:
         required: true
 
 jobs:
-  deploy-test-environment:
+  update-autogen-files:
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ github.token }}
@@ -25,6 +25,17 @@ jobs:
       with:
         repository: ${{ env.REPOSITORY }}
         ref: ${{ env.BRANCH_OR_HASH }}
+
+    - uses: pnpm/action-setup@v3
+      with:
+        version: 8
+        run_install: false
+    - uses: actions/setup-node@v4.0.2
+      with:
+        node-version-file: '.node-version'
+        cache: 'pnpm'
+    - run: corepack enable
+    - run: pnpm i --frozen-lockfile
 
     - name: Regen misskey-js type defs
       run: |
