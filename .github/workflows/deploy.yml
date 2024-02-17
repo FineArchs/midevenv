@@ -17,6 +17,7 @@ jobs:
   deploy-test-environment:
     runs-on: ubuntu-latest
     env:
+      GH_TOKEN: ${{ github.token }}
       REPOSITORY: 'FineArchs/misskey'
       WAIT_TIME: 1800
 
