@@ -53,6 +53,7 @@ jobs:
         HEAD_BRANCH="autogen/$BASE_BRANCH"
         git config --global user.email "cicada1003@gmail.com"
         git config --global user.name "FineArchs"
+        gh auth setup-git
         git add .
         git commit -m"Update autogen files"
         git branch -m $HEAD_BRANCH
