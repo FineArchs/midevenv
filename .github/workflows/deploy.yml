@@ -71,13 +71,11 @@ jobs:
     - name: Comment
       env: 
         BODY: |-
-          ==============================
           URL: https://${{ env.TUNNEL_DOMAIN }}
           Repository: ${{ env.REPOSITORY }}
           Branch or Commit hash: ${{ env.BRANCH_OR_HASH }}
           Commit: ${{ env.COMMIT_URL }}
           Time: ${{ env.CURRENT_TIME }}
-          ==============================
       run: |
         gh issue comment 1 -R $DEVENVREPO -b "$BODY"
     - name: Wait
