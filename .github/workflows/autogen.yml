@@ -36,6 +36,7 @@ jobs:
         cache: 'pnpm'
     - run: corepack enable
     - run: pnpm i --frozen-lockfile
+    - run: cp .config/example.yml .config/default.yml
 
     - name: Regen misskey-js type defs
       run: |
