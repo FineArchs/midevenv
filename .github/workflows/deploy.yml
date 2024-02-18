@@ -79,7 +79,7 @@ jobs:
           Time: ${{ env.CURRENT_TIME }}
           ==============================
       run: |
-        gh issue comment 1 -R $DEVENVREPO -b $BODY
+        gh issue comment 1 -R $DEVENVREPO -b "$BODY"
     - name: Wait
       run: |
         timeout $WAIT_TIME tail -f /var/log/syslog || true
