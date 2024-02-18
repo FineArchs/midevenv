@@ -63,12 +63,23 @@ jobs:
         sudo chmod 555 ./misskey-install.sh
         sudo bash -x ./misskey-install.sh -c ./testenv_githubactions.txt
 
-    - name: Comment
-      run: |
+    - run: |
         CURRENT_TIME=$(TZ=Asia/Tokyo date +'%Y-%m-%d %H:%M:%S JST')
+        echo "CURRENT_TIME=$CURRENT_TIME" >> $GITHUB_ENV
         COMMIT_URL="https://github.com/$REPOSITORY/commit/$SHA"
-        gh issue comment 1 -R $DEVENVREPO -b "==============================\nURL: https://$TUNNEL_DOMAIN\nRepository: $REPOSITORY\nBranch or Commit hash: $BRANCH_OR_HASH\nCommit: $COMMIT_URL\nTime: $CURRENT_TIME\n=============================="
-
+        echo "COMMIT_URL=$COMMIT_URL" >> $GITHUB_ENV
+    - name: Comment
+      env: 
+        BODY: >
+          ==============================
+          URL: https://${{ env.TUNNEL_DOMAIN }}
+          Repository: ${{ env.REPOSITORY }}
+          Branch or Commit hash: ${{ env.BRANCH_OR_HASH }}
+          Commit: ${{ env.COMMIT_URL }}
+          Time: ${{ env.CURRENT_TIME }}
+          ==============================
+      run: |
+        gh issue comment 1 -R $DEVENVREPO -b $BODY
     - name: Wait
       run: |
         timeout $WAIT_TIME tail -f /var/log/syslog || true
