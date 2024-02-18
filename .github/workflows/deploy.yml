@@ -21,6 +21,7 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
       REPOSITORY: 'FineArchs/misskey'
+      DEVENVREPO: 'FineArchs/midevenv'
       WAIT_TIME: 1800
 
     steps:
@@ -66,7 +67,7 @@ jobs:
       run: |
         CURRENT_TIME=$(TZ=Asia/Tokyo date +'%Y-%m-%d %H:%M:%S JST')
         COMMIT_URL="https://github.com/$REPOSITORY/commit/$SHA"
-        gh issue comment 1 -b "==============================\nURL: https://$TUNNEL_DOMAIN\nRepository: $REPOSITORY\nBranch or Commit hash: $BRANCH_OR_HASH\nCommit: $COMMIT_URL\nTime: $CURRENT_TIME\n=============================="
+        gh issue comment 1 -R $DEVENVREPO -b "==============================\nURL: https://$TUNNEL_DOMAIN\nRepository: $REPOSITORY\nBranch or Commit hash: $BRANCH_OR_HASH\nCommit: $COMMIT_URL\nTime: $CURRENT_TIME\n=============================="
 
     - name: Wait
       run: |
