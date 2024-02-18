@@ -70,7 +70,7 @@ jobs:
         echo "COMMIT_URL=$COMMIT_URL" >> $GITHUB_ENV
     - name: Comment
       env: 
-        BODY: >
+        BODY: |-
           ==============================
           URL: https://${{ env.TUNNEL_DOMAIN }}
           Repository: ${{ env.REPOSITORY }}
