@@ -27,7 +27,7 @@ jobs:
     steps:
     - name: Login
       run: |
-        gh auth login --with-token $GH_TOKEN
+        echo "$GH_TOKEN" | gh auth login --with-token
         gh auth setup-git
 
     - name: Checkout
