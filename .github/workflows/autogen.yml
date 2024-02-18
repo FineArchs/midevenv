@@ -5,6 +5,9 @@ on:
       branch_or_hash:
         type: string
         required: true
+    secrets:
+      MI_GH_TOKEN:
+        required: true
   workflow_dispatch:
     inputs:
       branch_or_hash:
@@ -17,7 +20,7 @@ jobs:
     permissions:
       pull-requests: write
     env:
-      GH_TOKEN: ${{ github.token }}
+      GH_TOKEN: ${{ secrets.MI_GH_TOKEN }}
       REPOSITORY: 'FineArchs/misskey'
       BRANCH_OR_HASH: ${{ inputs.branch_or_hash }}
 
