@@ -25,9 +25,8 @@ jobs:
       BRANCH_OR_HASH: ${{ inputs.branch_or_hash }}
 
     steps:
-    - name: Login
+    - name: setup git
       run: |
-        echo "$GH_TOKEN" | gh auth login --with-token
         gh auth setup-git
 
     - name: Checkout
