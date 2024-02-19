@@ -55,6 +55,8 @@ jobs:
       run: |
         BASE_BRANCH=$( git rev-parse --abbrev-ref HEAD )
         HEAD_BRANCH="autogen/$BASE_BRANCH"
+        # https://stackoverflow.com/questions/64374179/how-to-push-to-another-repository-in-github-actions
+        git config --unset-all http.https://github.com/.extraheader
         git config --global user.email "cicada1003@gmail.com"
         git config --global user.name "FineArchs"
         git add .
