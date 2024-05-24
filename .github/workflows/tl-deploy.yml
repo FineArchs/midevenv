@@ -6,11 +6,12 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    if: ${{
-        (github.event.issue.number == 1)
-        && (github.event.editor.login == 'FineArchs')
-      }}
+    #if: ${{
+    #    (github.event.issue.number == 1)
+    #    && (github.event.editor.login == 'FineArchs')
+    #  }}
     steps:
+      - run: echo ${{ github.event.issue.number }} ${{ github.event.editor.login }}
       - name: parse
         env:
           COMMENT: ${{ github.event.body }}
