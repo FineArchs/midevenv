@@ -11,10 +11,10 @@ jobs:
     #    && (github.event.editor.login == 'FineArchs')
     #  }}
     steps:
-      - run: echo ${{ github.event.issue.number }} ${{ github.event.editor.login }}
+      - run: echo ${{ github.event.issue.number }} ${{ github.event.comment.editor.login }}
       - name: parse
         env:
-          COMMENT: ${{ github.event.body }}
+          COMMENT: ${{ github.event.comment.body }}
         run: |
           variables=(
             'BRANCH_OR_HASH'
