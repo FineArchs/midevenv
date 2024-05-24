@@ -30,6 +30,6 @@ jobs:
 
   call:
     needs: deploy
-    uses: /.github/workflows/deploy.yml@main
+    uses: ./.github/workflows/deploy.yml@main
     with:
       branch_or_hash: ${{ needs.deploy.steps.parse.outputs.BRANCH_OR_HASH }}
