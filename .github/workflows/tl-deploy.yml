@@ -11,7 +11,7 @@ jobs:
         && (github.actor == github.repository_owner)
       }}
     steps:
-      - name: parse
+      - id: parse
         env:
           COMMENT: ${{ github.event.comment.body }}
         run: |
@@ -25,10 +25,11 @@ jobs:
           readarray -t values <<< "$COMMENT"
           echo B $values
           for i in ${!variables[@]}; do
-            echo "${variables[i]}=${values[i]}" >> $GITHUB_ENV
+            echo "${variables[i]}=${values[i]}" >> $GITHUB_OUTPUT
           done
 
-      - name: call
-        uses: ./deploy.yml
-        with:
-           branch_or_hash: ${{ env.BRANCH_OR_HASH }}
+  call:
+    needs: deploy
+    uses: /.github/workflows/deploy.yml@main
+    with:
+      branch_or_hash: ${{ needs.deploy.steps.parse.outputs.BRANCH_OR_HASH }}
