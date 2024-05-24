@@ -19,7 +19,9 @@ jobs:
             'BRANCH_OR_HASH'
           )
           echo A $variables
-          IFS=$'\n' read -r -d '' -a values <<< "$COMMENT"
+          IFS=$'\n'
+          echo A2 $IFS
+          read -r -d '' -a values <<< "$COMMENT"
           echo B $values
           for i in ${!variables[@]}; do
             echo "${variables[i]}=${values[i]}" >> $GITHUB_ENV
