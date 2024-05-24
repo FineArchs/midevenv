@@ -6,12 +6,11 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    #if: ${{
-    #    (github.event.issue.number == 1)
-    #    && (github.event.editor.login == 'FineArchs')
-    #  }}
+    if: ${{
+        (github.event.issue.number == 1)
+        && (github.actor == github.repository_owner)
+      }}
     steps:
-      - run: echo ${{ github.event.issue.number }} ${{ github.actor }}
       - name: parse
         env:
           COMMENT: ${{ github.event.comment.body }}
@@ -19,7 +18,9 @@ jobs:
           variables=(
             'BRANCH_OR_HASH'
           )
+          echo A $variables
           IFS=$'\n' read -r -d '' -a values <<< "$COMMENT"
+          echo B $values
           for i in ${!variables[@]}; do
             echo "${variables[i]}=${values[i]}" >> $GITHUB_ENV
           done
