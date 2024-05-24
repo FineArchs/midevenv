@@ -1,0 +1,29 @@
+name: Deploy from timeline
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: ${{
+        (github.event.issue.number == 1)
+        && (github.event.editor.login == 'FineArchs')
+      }}
+    steps:
+      - name: parse
+        env:
+          COMMENT: ${{ github.event.body }}
+        run: |
+          variables=(
+            'BRANCH_OR_HASH'
+          )
+          IFS=$'\n' read -r -d '' -a values <<< "$COMMENT"
+          for i in ${!variables[@]}; do
+            echo "${variables[i]}=${values[i]}" >> $GITHUB_ENV
+          done
+
+      - name: call
+        uses: ./deploy.yml
+        with:
+           branch_or_hash: ${{ env.BRANCH_OR_HASH }}
