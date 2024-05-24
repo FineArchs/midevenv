@@ -11,7 +11,7 @@ jobs:
     #    && (github.event.editor.login == 'FineArchs')
     #  }}
     steps:
-      - run: echo ${{ github.event.issue.number }} ${{ github.event.comment.editor.login }}
+      - run: echo ${{ github.event.issue.number }} ${{ github.actor }}
       - name: parse
         env:
           COMMENT: ${{ github.event.comment.body }}
