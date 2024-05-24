@@ -21,7 +21,8 @@ jobs:
           echo A $variables
           IFS=$'\n'
           echo A2 $IFS
-          read -r -d '' -a values <<< "$COMMENT"
+          echo A3 "$COMMENT"
+          readarray -t values <<< "$COMMENT"
           echo B $values
           for i in ${!variables[@]}; do
             echo "${variables[i]}=${values[i]}" >> $GITHUB_ENV
