@@ -10,26 +10,24 @@ jobs:
         (github.event.issue.number == 1)
         && (github.actor == github.repository_owner)
       }}
+    outputs:
+      branch_or_hash: ${{ steps.parse.outputs.branch_or_hash }}
     steps:
       - id: parse
         env:
           COMMENT: ${{ github.event.comment.body }}
         run: |
-          variables=(
-            'BRANCH_OR_HASH'
+          outputs=(
+            'branch_or_hash'
           )
-          echo A $variables
           IFS=$'\n'
-          echo A2 $IFS
-          echo A3 "$COMMENT"
           readarray -t values <<< "$COMMENT"
-          echo B $values
-          for i in ${!variables[@]}; do
-            echo "${variables[i]}=${values[i]}" >> $GITHUB_OUTPUT
+          for i in ${!outputs[@]}; do
+            echo "${outputs[i]}=${values[i]}" >> $GITHUB_OUTPUT
           done
 
   call:
     needs: deploy
     uses: ./.github/workflows/deploy.yml
     with:
-      branch_or_hash: ${{ needs.deploy.steps.parse.outputs.BRANCH_OR_HASH }}
+      branch_or_hash: ${{ needs.deploy.outputs.branch_or_hash }}
