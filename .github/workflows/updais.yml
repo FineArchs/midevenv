@@ -1,0 +1,72 @@
+name: Update AiScript
+on:
+  workflow_call:
+    inputs:
+      branch_or_hash:
+        type: string
+        required: true
+    secrets:
+      MI_GH_TOKEN:
+        required: true
+  workflow_dispatch:
+    inputs:
+      branch_or_hash:
+        type: string
+        required: true
+
+jobs:
+  update-autogen-files:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    env:
+      GH_TOKEN: ${{ secrets.MI_GH_TOKEN }}
+      REPOSITORY: 'FineArchs/misskey'
+      BRANCH_OR_HASH: ${{ inputs.branch_or_hash }}
+
+    steps:
+    - name: setup git
+      run: |
+        gh auth setup-git
+
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        repository: ${{ env.REPOSITORY }}
+        ref: ${{ env.BRANCH_OR_HASH }}
+
+    - uses: pnpm/action-setup@v3
+      with:
+        version: 8
+        run_install: false
+    - uses: actions/setup-node@v4.0.2
+      with:
+        node-version-file: '.node-version'
+        cache: 'pnpm'
+    - run: corepack enable
+    - run: pnpm i --frozen-lockfile
+    - run: cp .config/example.yml .config/default.yml
+
+    - name: Update AiScript
+      run: |
+        pnpm up @syuilo/aiscript
+
+    - name: Create PR
+      run: |
+        BASE_BRANCH=$( git rev-parse --abbrev-ref HEAD )
+        HEAD_BRANCH="updais/$BASE_BRANCH"
+        # https://stackoverflow.com/questions/64374179/how-to-push-to-another-repository-in-github-actions
+        git config --unset-all http.https://github.com/.extraheader
+        git config --global user.email "cicada1003@gmail.com"
+        git config --global user.name "FineArchs"
+        git add .
+        git commit -m"Update autogen files"
+        git branch -m $HEAD_BRANCH
+        git push -f -u origin $HEAD_BRANCH
+        PRS=$(gh pr list --json id -H $HEAD_BRANCH -s open)
+        if [ "$PRS" == '[]' ]
+        then
+          gh pr create --base $BASE_BRANCH --fill
+        else
+          echo "$PRS"
+        fi
