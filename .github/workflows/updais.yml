@@ -62,7 +62,7 @@ jobs:
         git config --global user.email "cicada1003@gmail.com"
         git config --global user.name "FineArchs"
         git add .
-        git commit -m"Update autogen files"
+        git commit -m"Update AiScript"
         git branch -m $HEAD_BRANCH
         git push -f -u origin $HEAD_BRANCH
         PRS=$(gh pr list --json id -H $HEAD_BRANCH -s open)
