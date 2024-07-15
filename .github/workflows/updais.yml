@@ -50,7 +50,7 @@ jobs:
     - name: Update AiScript
       run: |
         cd packages/frontend
-        pnpm up @syuilo/aiscript
+        pnpm up -L @syuilo/aiscript
         cd ../..
 
     - name: Create PR
