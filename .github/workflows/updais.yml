@@ -49,7 +49,9 @@ jobs:
 
     - name: Update AiScript
       run: |
+        cd packages/frontend
         pnpm up @syuilo/aiscript
+        cd ../..
 
     - name: Create PR
       run: |
