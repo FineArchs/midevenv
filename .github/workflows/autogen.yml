@@ -47,7 +47,8 @@ jobs:
     - run: corepack enable
     - run: pnpm i --no-frozen-lockfile
     - run: cp .config/example.yml .config/default.yml
-
+    - run: pnpm build
+  
     - name: Regen misskey-js type defs
       run: |
         pnpm run build-misskey-js-with-types
