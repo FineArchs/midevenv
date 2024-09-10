@@ -33,6 +33,7 @@ jobs:
       uses: actions/checkout@v4
       with:
         repository: ${{ env.REPOSITORY }}
+        submodules: true
         ref: ${{ env.BRANCH_OR_HASH }}
 
     - uses: pnpm/action-setup@v3
