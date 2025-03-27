@@ -1,0 +1,87 @@
+# Modified from https://github.com/joinmisskey/misskey-tga
+
+name: Deploy test environment
+on:
+  workflow_call:
+    inputs:
+      branch_or_hash:
+        type: string
+        required: true
+  workflow_dispatch:
+    inputs:
+      branch_or_hash:
+        type: string
+        required: true
+
+jobs:
+  deploy-test-environment:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPOSITORY: 'FineArchs/random_image'
+      DEVENVREPO: 'FineArchs/midevenv'
+      WAIT_TIME: 1800
+
+    steps:
+    - name: Set environment variable (for tput command & pnpm)
+      run: |
+        echo "TERM=xterm" >> $GITHUB_ENV
+        BRANCH_OR_HASH=${{ inputs.branch_or_hash }}
+        echo "BRANCH_OR_HASH=$BRANCH_OR_HASH" >> $GITHUB_ENV
+
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        repository: ${{ env.REPOSITORY }}
+        ref: ${{ env.BRANCH_OR_HASH }}
+  
+    - name: Get the latest commit SHA
+      run: |
+        SHA=$(git log -1 --format="%H")
+        echo "SHA=$SHA" >> $GITHUB_ENV
+
+    - name: Start cloudflare tunnel (quick)
+      run: |
+        wget https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb
+        sudo dpkg -i cloudflared-linux-amd64.deb
+        sudo cloudflared tunnel --metrics localhost:55555 --url localhost:3000 > /dev/null 2>&1 &
+        sleep 15
+        TUNNEL_RESPONSE=$(curl http://localhost:55555/quicktunnel)
+        TUNNEL_DOMAIN=$(echo $TUNNEL_RESPONSE | grep -o '"hostname":"[^"]*' | grep -o '[^"]*$')
+        echo "::add-mask::$TUNNEL_DOMAIN"
+        echo "TUNNEL_DOMAIN=$TUNNEL_DOMAIN" >> $GITHUB_ENV
+
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v4.1.0
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4.2.0
+      with:
+        node-version-file: '.node-version'
+        cache: 'pnpm'
+
+    - name: Install dependencies
+      run: |
+        pnpm i --frozen-lockfile
+        pnpm --exec wrangler dev --port 3000
+
+    - run: |
+        CURRENT_TIME=$(TZ=Asia/Tokyo date +'%Y-%m-%d %H:%M:%S JST')
+        echo "CURRENT_TIME=$CURRENT_TIME" >> $GITHUB_ENV
+        COMMIT_URL="https://github.com/$REPOSITORY/commit/$SHA"
+        echo "COMMIT_URL=$COMMIT_URL" >> $GITHUB_ENV
+    - name: Comment
+      env: 
+        BODY: |-
+          URL: https://${{ env.TUNNEL_DOMAIN }}
+          Repository: ${{ env.REPOSITORY }}
+          Branch or Commit hash: ${{ env.BRANCH_OR_HASH }}
+          Commit: ${{ env.COMMIT_URL }}
+          Time: ${{ env.CURRENT_TIME }}
+      run: |
+        gh issue comment 1 -R $DEVENVREPO -b "$BODY"
+    - name: Wait
+      run: |
+        timeout $WAIT_TIME tail -f /var/log/syslog || true
