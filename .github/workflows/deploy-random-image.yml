@@ -1,6 +1,6 @@
 # Modified from https://github.com/joinmisskey/misskey-tga
 
-name: Deploy test environment
+name: Deploy test environment(random image)
 on:
   workflow_call:
     inputs:
