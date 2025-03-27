@@ -66,7 +66,7 @@ jobs:
     - name: Install dependencies
       run: |
         pnpm i --frozen-lockfile
-        pnpm --exec wrangler dev --port 3000
+        pnpm --exec wrangler dev --port 3000 &
 
     - run: |
         CURRENT_TIME=$(TZ=Asia/Tokyo date +'%Y-%m-%d %H:%M:%S JST')
