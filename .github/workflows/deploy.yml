@@ -76,8 +76,10 @@ jobs:
 
     - name: Setup pnpm
       uses: pnpm/action-setup@v4.1.0
+      working-directory: ${{ env.MISSKEY_DIR }}
     - name: Setup Nodejs
       uses: actions/setup-node@v4.3.0
+      working-directory: ${{ env.MISSKEY_DIR }}
       with:
         node-version-file: '.node-version'
         cache: 'pnpm'
