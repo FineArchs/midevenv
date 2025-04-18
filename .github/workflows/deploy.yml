@@ -86,6 +86,7 @@ jobs:
         PORT: 3001
       run: |
         cd migration-trigger
+        echo $! > .migrate-pid
         pnpm i --frozen-lockfile
         pnpm start &
 
