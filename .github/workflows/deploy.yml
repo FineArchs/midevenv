@@ -54,6 +54,15 @@ jobs:
         echo "::add-mask::$TUNNEL_DOMAIN"
         echo "TUNNEL_DOMAIN=$TUNNEL_DOMAIN" >> $GITHUB_ENV
 
+    - name: Start cloudflare tunnel for migration server(quick)
+      run: |
+        sudo cloudflared tunnel --metrics localhost:55556 --url localhost:3001 > /dev/null 2>&1 &
+        sleep 15
+        TUNNEL_RESPONSE=$(curl http://localhost:55556/quicktunnel)
+        TUNNEL_DOMAIN=$(echo $TUNNEL_RESPONSE | grep -o '"hostname":"[^"]*' | grep -o '[^"]*$')
+        echo "::add-mask::$TUNNEL_DOMAIN_MIG"
+        echo "TUNNEL_DOMAIN_MIG=$TUNNEL_DOMAIN_MIG" >> $GITHUB_ENV
+
     - name: Install misskey
       run: |
         wget https://raw.githubusercontent.com/FineArchs/bash-install/v4/misskey-install.sh
@@ -64,15 +73,33 @@ jobs:
         sudo chmod 555 ./misskey-install.sh
         sudo bash -x ./misskey-install.sh -c ./testenv_githubactions.txt
 
+    - name: Change Directory
+      run: |
+        echo "MIG_DIR=$(pwd)" >> $GITHUB_ENV
+        cd ..
+
+    - name: Checkout This Repository
+      uses: actions/checkout@v4
+  
+    - name: Start Migration Trigger
+      env:
+        PORT: 3001
+      run: |
+        cd migration-trigger
+        pnpm i --frozen-lockfile
+        pnpm start
+
     - run: |
         CURRENT_TIME=$(TZ=Asia/Tokyo date +'%Y-%m-%d %H:%M:%S JST')
         echo "CURRENT_TIME=$CURRENT_TIME" >> $GITHUB_ENV
         COMMIT_URL="https://github.com/$REPOSITORY/commit/$SHA"
         echo "COMMIT_URL=$COMMIT_URL" >> $GITHUB_ENV
+
     - name: Comment
       env: 
         BODY: |-
           URL: https://${{ env.TUNNEL_DOMAIN }}
+          MIGRATION_URL: https://${{ env.TUNNEL_DOMAIN_MIG }}
           Repository: ${{ env.REPOSITORY }}
           Branch or Commit hash: ${{ env.BRANCH_OR_HASH }}
           Commit: ${{ env.COMMIT_URL }}
