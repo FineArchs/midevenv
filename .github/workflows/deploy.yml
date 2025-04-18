@@ -43,7 +43,7 @@ jobs:
         SHA=$(git log -1 --format="%H")
         echo "SHA=$SHA" >> $GITHUB_ENV
 
-    - name: Start cloudflare tunnel (quick)
+    - name: Start cloudflare tunnel (misskey)
       run: |
         wget https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb
         sudo dpkg -i cloudflared-linux-amd64.deb
@@ -54,10 +54,9 @@ jobs:
         echo "::add-mask::$TUNNEL_DOMAIN"
         echo "TUNNEL_DOMAIN=$TUNNEL_DOMAIN" >> $GITHUB_ENV
 
-    - name: Start cloudflare tunnel for migration server(quick)
+    - name: Start cloudflare tunnel (migration trigger)
       run: |
-        sudo cloudflared tunnel --metrics localhost:55556 --url localhost:3001 > /dev/null 2>&1 &
-        sleep 15
+        sudo cloudflared tunnel --metrics localhost:55556 --url localhost:3001
         TUNNEL_RESPONSE=$(curl http://localhost:55556/quicktunnel)
         TUNNEL_DOMAIN=$(echo $TUNNEL_RESPONSE | grep -o '"hostname":"[^"]*' | grep -o '[^"]*$')
         echo "::add-mask::$TUNNEL_DOMAIN_MIG"
@@ -87,7 +86,7 @@ jobs:
       run: |
         cd migration-trigger
         pnpm i --frozen-lockfile
-        pnpm start
+        pnpm start &
 
     - run: |
         CURRENT_TIME=$(TZ=Asia/Tokyo date +'%Y-%m-%d %H:%M:%S JST')
