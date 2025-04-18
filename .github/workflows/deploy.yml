@@ -59,7 +59,7 @@ jobs:
         sudo cloudflared tunnel --metrics localhost:55556 --url localhost:3001 &
         sleep 15
         TUNNEL_RESPONSE=$(curl http://localhost:55556/quicktunnel)
-        TUNNEL_DOMAIN=$(echo $TUNNEL_RESPONSE | grep -o '"hostname":"[^"]*' | grep -o '[^"]*$')
+        TUNNEL_DOMAIN_MIG=$(echo $TUNNEL_RESPONSE | grep -o '"hostname":"[^"]*' | grep -o '[^"]*$')
         echo "::add-mask::$TUNNEL_DOMAIN_MIG"
         echo "TUNNEL_DOMAIN_MIG=$TUNNEL_DOMAIN_MIG" >> $GITHUB_ENV
 
