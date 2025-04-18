@@ -32,8 +32,8 @@ jobs:
           # for tput command pnpm
           echo "TERM=xterm"
           # directories
-          echo "MISSKEY_DIR=$(cwd)/misskey"
-          echo "SCRIPTS_DIR=$(cwd)/deploy"
+          echo "MISSKEY_DIR=$(pwd)/misskey"
+          echo "SCRIPTS_DIR=$(pwd)/deploy"
         } >> $GITHUB_ENV
 
     - name: Checkout Deploying Scripts
