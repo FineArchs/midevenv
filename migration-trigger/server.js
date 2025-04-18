@@ -10,7 +10,7 @@ const __dirname = path.dirname(__filename)
 const fastify = Fastify({ logger: true })
 
 const PORT = process.env.PORT || '3001';
-const MIG_DIR = process.env.MIG_DIR || path.join(__dirname, 'project')
+const MIG_DIR = process.env.MISSKEY_DIR;
 const MIG_PID_PATH = path.join(__dirname, '.migrate-pid')
 
 // `/` にアクセスすると HTML フォームを返す

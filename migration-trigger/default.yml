@@ -1,0 +1,26 @@
+port: 3000
+
+# PostgreSQL
+db:
+  host: localhost
+  port: 5432
+  db: misskey
+  user: misskey
+  pass: misskey
+
+# Redis
+redis:
+  host: localhost
+  port: 6379
+  pass: misskey
+
+# ID type
+id: 'aid'
+
+proxyBypassHosts:
+  - api.deepl.com
+  - api-free.deepl.com
+  - www.recaptcha.net
+  - hcaptcha.com
+  - challenges.cloudflare.com
+  - summaly.arkjp.net
